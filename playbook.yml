@@ -12,47 +12,50 @@
     node_name_es02: "es02"
     node_name_es03: "es03"
   tasks:
-    - name: Update the server and install apt-transport-https package
-      apt:
-        name: apt-transport-https
+    - name: Update the server and install dnf-plugins-core package
+      become: true
+      dnf:
+        name: dnf-plugins-core
+        state: present
         update_cache: yes
+
 
     - name: Update package cache and fix missing dependencies
       become: true
-      apt:
+      dnf:
         update_cache: yes
-        name: openjdk-11-jdk
+        name: java-11-openjdk-devel
         state: present
-        force_apt_get: yes
 
     - name: Set JAVA_HOME Environment Variables
       lineinfile:
         path: /etc/environment
-        line: 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"'
+        line: 'JAVA_HOME="/usr/lib/jvm/java-11"'
       environment:
-        PATH: "{{ ansible_env.PATH }}:/usr/lib/jvm/java-11-openjdk-amd64/bin"
+        PATH: "{{ ansible_env.PATH }}:/usr/lib/jvm/java-11/bin"
 
     - name: Reload environment variables
       become: true
-      shell: . /etc/environment
+      shell: source /etc/environment
 
     - name: Verify JAVA_HOME environment variable
       command: echo $JAVA_HOME
 
     - name: Add ElasticSearch GPG key
-      apt_key:
-        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      become: true
+      rpm_key:
+        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
         state: present
-        keyring: /usr/share/keyrings/elasticsearch-keyring.gpg
 
     - name: Add ElasticSearch repository
       become: true
-      become_method: sudo
-      shell: echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+      dnf:
+        name: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.0.0-x86_64.rpm
+        state: present
+      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'
 
-    - name: Install ElasticSearch 8 on Ubuntu 20.04 LTS
-      apt:
-        update_cache: yes
+    - name: Install ElasticSearch 8 on CentOS 8
+      yum:
         name: elasticsearch
         state: present
 
@@ -93,7 +96,7 @@
         node_name: "{{ node_name_es03 }}"
 
     - name: Start Elasticsearch service
-      service:
+      systemd:
         name: elasticsearch
         state: started
         enabled: yes

@@ -62,6 +62,13 @@
       yum:
         name: elasticsearch
         state: present
+       
+    - name: Generate keystore and truststore files
+      become: true
+      become_method: sudo
+      command: /usr/share/elasticsearch/bin/elasticsearch-certutil cert -out /etc/elasticsearch/elastic-certificates.p12 -pass "" 
+      args:
+        creates: /etc/elasticsearch/elastic-certificates.p12
 
     - name: Generate Elasticsearch configuration file on es01
       template:

@@ -19,7 +19,6 @@
         state: present
         update_cache: yes
 
-
     - name: Update package cache and fix missing dependencies
       become: true
       dnf:

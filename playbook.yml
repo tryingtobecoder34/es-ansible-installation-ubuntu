@@ -40,18 +40,23 @@
     - name: Verify JAVA_HOME environment variable
       command: echo $JAVA_HOME
 
-    - name: Add ElasticSearch GPG key
+    - name: Import Elasticsearch GPG key
       become: true
+      become_method: sudo
       rpm_key:
         key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
         state: present
 
-    - name: Add ElasticSearch repository
+    - name: Add Elasticsearch repository
       become: true
-      dnf:
-        name: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.0.0-x86_64.rpm
-        state: present
-      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'
+      become_method: sudo
+      yum_repository:
+        name: elasticsearch
+        description: Elasticsearch repository for 8.x packages
+        baseurl: https://artifacts.elastic.co/packages/8.x/yum
+        gpgcheck: yes
+        gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        enabled: yes
 
     - name: Install ElasticSearch 8 on CentOS 8
       yum:
@@ -103,7 +108,7 @@
     - name: Add Kibana repository
       become: true
       dnf:
-        name: https://artifacts.elastic.co/downloads/kibana/kibana-8.0.0-x86_64.rpm
+        name: https://artifacts.elastic.co/downloads/kibana/kibana-8.6.2-x86_64.rpm
         state: present
       when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'
       delegate_to: es01

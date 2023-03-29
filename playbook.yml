@@ -11,9 +11,6 @@
     node_name_es01: "es01"
     node_name_es02: "es02"
     node_name_es03: "es03"
-    es_config_path: /etc/elasticsearch
-    es_keystore_pass: password
-    es_cert_path: /etc/elasticsearch/certs
   tasks:
     - name: Update the server and install dnf-plugins-core package
       become: true

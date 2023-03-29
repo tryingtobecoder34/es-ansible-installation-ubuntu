@@ -62,13 +62,25 @@
       yum:
         name: elasticsearch
         state: present
+
+    - name: Create directory to store CA files
+      file:
+        path: /etc/pki/ca-trust/source/es-certs
+        state: directory
        
     - name: Generate keystore and truststore files
       become: true
       become_method: sudo
-      command: /usr/share/elasticsearch/bin/elasticsearch-certutil cert -out /etc/elasticsearch/elastic-certificates.p12 -pass "" 
+      command: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca-cert /etc/pki/ca-trust/source/es-certs/ca-cert.pem --ca-key /etc/pki/ca-trust/source/es-certs/ca-key.pem -out /etc/elasticsearch/elastic-certificates.p12 -pass ""
       args:
         creates: /etc/elasticsearch/elastic-certificates.p12
+      delegate_to: es01
+      
+    - name: Copy CA private key from es01
+      synchronize:
+        src: user@es01:/path/to/ca-key.pem
+        dest: /etc/pki/ca-trust/source/es-certs/ca-key.pem
+      delegate_to: es02,es03
 
     - name: Generate Elasticsearch configuration file on es01
       template:

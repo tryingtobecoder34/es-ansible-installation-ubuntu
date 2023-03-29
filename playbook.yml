@@ -101,71 +101,6 @@
       vars:
         node_roles: "{{ node_roles_master }}"
         node_name: "{{ node_name_es03 }}"
-
-    - name: Generate CA and node certificates
-      shell: |
-        echo | /usr/share/elasticsearch/bin/elasticsearch-certutil ca --out /etc/elasticsearch/certs/elastic-stack-ca.p12 --pass ""
-        echo | /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca /etc/elasticsearch/certs/elastic-stack-ca.p12 --out /etc/elasticsearch/certs/elastic-certificates.p12 --pass ""
-      args:
-        chdir: "{{ es_config_path }}"
-      register: certutil_output
-      delegate_to: es01
-
-    - name: Set certificate owner and permissions
-      file:
-        path: "{{ es_cert_path }}"
-        owner: elasticsearch
-        group: elasticsearch
-        mode: 0640
-        recurse: 
-      delegate_to: es01
-
-    - name: Set keystore password
-      shell: |
-        echo "{{ es_keystore_pass }}" | bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.keystore.secure_password
-        echo "{{ es_keystore_pass }}" | bin/elasticsearch-keystore add --stdin --force xpack.security.transport.ssl.truststore.secure_password
-      args:
-        chdir: "{{ es_config_path }}"
-      delegate_to: es01
-
-    - name: Copy elastic-certificates.p12
-      fetch:
-        src: /etc/elasticsearch/certs/elastic-certificates.p12
-        dest: /tmp/elastic-certificates.p12
-        flat: yes
-      delegate_to: es01
-
-    - name: Copy elastic-stack-ca.p12
-      fetch:
-        src: /etc/elasticsearch/certs/elastic-stack-ca.p12
-        dest: /tmp/elastic-stack-ca.p12
-        flat: yes
-      delegate_to: es01
-
-    - name: Copy certificates to node
-      copy:
-        src: /tmp/{{ item }}
-        dest: /etc/elasticsearch/certs/{{ item }}
-      with_items:
-        - elastic-certificates.p12
-        - elastic-stack-ca.p12
-      delegate_to: es01, es02
-
-    - name: Set certificate owner and group
-      file:
-        path: /etc/elasticsearch/certs/{{ item }}
-        owner: elasticsearch
-        group: elasticsearch
-      with_items:
-        - elastic-certificates.p12
-        - elastic-stack-ca.p12
-      delegate_to: es01, es02
-
-    - name: Start Elasticsearch service
-      systemd:
-        name: elasticsearch
-        state: started
-        enabled: yes
         
     - name: Add Kibana repository
       become: true
@@ -181,17 +116,3 @@
         name: kibana
         state: present
       delegate_to: es01
-
-    - name: Start and enable Kibana service on es01
-      become: true
-      systemd:
-        name: kibana
-        state: started
-        enabled: yes
-      delegate_to: es01
-      
-  handlers:
-    - name: Restart Elasticsearch service
-      service:
-        name: elasticsearch
-        state: restarted

@@ -1,6 +1,6 @@
-# ElasticSearch Instalation with Ansible
+# ElasticSearch and Kibana Instalation with Ansible
 
-This Ansible playbook sets up a multi-node Elasticsearch. The playbook assumes Ubuntu 20.04 LTS as the operating system.
+This Ansible playbook sets up a multi-node Elasticsearch. The playbook assumes CentOS 8 as the operating system.
 
 ## As long as you don't specify the version this playbook will install latest version of 8.x.x of Elasticserach.
 
@@ -8,14 +8,14 @@ You can try to install a specif version, by changing to older repository url on 
 
 ## Requirements
 - Ansible 2.9.6 or higher
-- Access to three Ubuntu 20.04 LTS servers
+- Access to ELK servers, from Ansible-Node
 - SSH access to each server with sudo privileges
 
 ### Usage
 
 1. Clone this repository to your local machine:
 
-		git clone https://github.com/devopsrange/es-ansible-installation
+		git clone https://github.com/tryingtobecoder34/es-ansible-installation-centos
 
 2. Modify the inventory.ini file to include the hostnames or IP addresses of your three servers.
 
@@ -24,6 +24,7 @@ You can try to install a specif version, by changing to older repository url on 
 4. Run the Ansible-Playbook, be sure your user have permission to make changes on the remote hosts, or you can add -u root, parameter to auth as a root user to other hosts
 	
 		ansible-playbook -i inventory.ini playbook.yml -u root
+		ansible-playbook -i inventory.ini renew-certificate.yml -u root
 
 
 ### Configuration
@@ -46,7 +47,8 @@ The variables can be set in the elasticsearch.yml.j2 file to customize the Elast
 
 To uninstall the elastic search some helpfull commands.
 
-	sudo apt-get --purge autoremove elasticsearch -y
-	sudo apt-get remove --purge elasticsearch 
-	sudo rm -rf /etc/elasticsearch
-	sudo rm -rf /var/lib/elasticsearch
+	sudo yum remove elasticsearch
+	sudo yum remove kibana
+	sudo rm /var/lib/elasticsearch -rf
+	sudo rm /var/lib/kibana -rf
+

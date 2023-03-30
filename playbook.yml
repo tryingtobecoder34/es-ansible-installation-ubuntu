@@ -143,10 +143,9 @@
             enabled: yes
           when: "'elasticsearch_nodes' in group_names"
 
-        - name: Enable Kibana service
+    - name: Enable Kibana service
           systemd:
             name: kibana
             state: started
             enabled: yes
           when: "'kibana_nodes' in group_names"
-          

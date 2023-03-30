@@ -3,9 +3,11 @@
     - es01
     - es02
     - es03
+    - kibana01
   become: true
   vars:
     elasticsearch_config_file: /etc/elasticsearch/elasticsearch.yml
+    kibana_config_file: /etc/kibana/kibana.yml
     node_roles_master_data: ["master", "data"]
     node_roles_master: ["master"]
     node_name_es01: "es01"
@@ -107,9 +109,19 @@
       when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'
       delegate_to: es01
 
-    - name: Install Kibana on es01
+    - name: Install Kibana on kibana01
       become: true
       yum:
         name: kibana
         state: present
-      delegate_to: es01
+      delegate_to: kibana01
+
+
+    - name: Generate Kibana configuration file on kibana01
+      template:
+        src: kibana.yml.j2
+        dest: "{{ kibana_config_file }}"
+        owner: kibana
+        group: kibana
+        mode: '0644'
+      delegate_to: kibana01

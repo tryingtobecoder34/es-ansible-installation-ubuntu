@@ -17,7 +17,7 @@ You can try to install a specif version, by changing to older repository url on 
 
 		git clone https://github.com/tryingtobecoder34/es-ansible-installation-centos
 
-2. Modify the inventory.ini file to include the hostnames or IP addresses of your three servers.
+2. Modify the inventory & Jinja2 files for you enviroment, include the hostnames or IP addresses of your three servers.
 
 3. Modify the elasticsearch.yml.j2 file to set the cluster name, JVM heap size, network host, and xpack security settings as desired.
 

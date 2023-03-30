@@ -115,7 +115,7 @@
       yum:
         name: kibana
         state: present
-      delegate_to: kibana01
+      delegate_to: "{{ groups['kibana_nodes']}}"
 
     - name: Generate Kibana configuration file on kibana01
       template:

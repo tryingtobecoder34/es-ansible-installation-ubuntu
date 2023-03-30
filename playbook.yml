@@ -109,7 +109,7 @@
         name: https://artifacts.elastic.co/downloads/kibana/kibana-8.6.2-x86_64.rpm
         state: present
       when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'
-      delegate_to: es01
+      delegate_to: kibana01
 
     - name: Install Kibana on kibana01
       become: true

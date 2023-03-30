@@ -1,5 +1,27 @@
 - hosts: elasticsearch_nodes
   tasks:
+    - name: Create a directory at ~/ named certs_old, skip if it exist on es01
+      file:
+        path: ~/certs_old
+        state: directory
+      when: inventory_hostname == "es01"
+
+    - name: Move ~/elastic-stack-ca.p12 and ~/elastic-certificates.p12 to ~/certs_old on es01 and rename the files with date parameter while moving.
+      shell: |
+        current_date=$(date +'%Y-%m-%d')
+        if [ -f ~/elastic-stack-ca.p12 ]; then
+          mv ~/elastic-stack-ca.p12 ~/certs_old/elastic-stack-ca-${current_date}.p12
+        fi
+        if [ -f ~/elastic-certificates.p12 ]; then
+          mv ~/elastic-certificates.p12 ~/certs_old/elastic-certificates-${current_date}.p12
+        fi
+      when: inventory_hostname == "es01"
+
+    - name: Delete /etc/elasticsearch/elastic-certificates.p12 on es01, es02, es03
+      file:
+        path: /etc/elasticsearch/elastic-certificates.p12
+        state: absent
+
     - name: Create a self-signed certificate authority on es01
       shell: /usr/share/elasticsearch/bin/elasticsearch-certutil ca --out ~/elastic-stack-ca.p12 --pass ""
       when: inventory_hostname == "es01"

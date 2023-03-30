@@ -1,9 +1,5 @@
 - name: Install and configure Elasticsearch cluster
-  hosts:
-    - es01
-    - es02
-    - es03
-    - kibana01
+  hosts: all
   become: true
   vars:
     elasticsearch_config_file: /etc/elasticsearch/elasticsearch.yml
@@ -58,7 +54,7 @@
         baseurl: https://artifacts.elastic.co/packages/8.x/yum
         gpgcheck: yes
         gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
-        enabled: yes
+      when: "'elasticsearch_nodes' in group_names"
 
     - name: Install ElasticSearch 8 on CentOS 8
       yum:
@@ -110,7 +106,7 @@
         name: https://artifacts.elastic.co/downloads/kibana/kibana-8.6.2-x86_64.rpm
         state: present
       when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '8'
-      delegate_to: kibana01
+      when: "'kibana_nodes' in group_names"
 
     - name: Install Kibana on kibana01
       become: true

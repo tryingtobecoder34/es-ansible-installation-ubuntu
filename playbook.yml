@@ -64,7 +64,7 @@
       yum:
         name: elasticsearch
         state: present
-      delegate_to: "{{ groups['elasticsearch_nodes'] | join(',') }}"
+      delegate_to: elasticsearch_nodes
 
     - name: Generate Elasticsearch configuration file on es01
       template:
@@ -115,7 +115,7 @@
       yum:
         name: kibana
         state: present
-      delegate_to: "{{ groups['kibana_nodes'] | join(',') }}"
+      delegate_to: kibana_nodes
 
     - name: Generate Kibana configuration file on kibana01
       template:
@@ -124,4 +124,4 @@
         owner: kibana
         group: kibana
         mode: '0644'
-      delegate_to: "{{ groups['kibana_nodes'] | join(',') }}"
+      delegate_to: kibana_nodes

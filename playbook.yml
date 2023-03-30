@@ -131,3 +131,22 @@
       delegate_to: "{{ item }}"
       with_items: "{{ groups['kibana_nodes'] }}"
       run_once: true
+
+    - name: Enable Elasticsearch and Kibana services
+      hosts: elasticsearch_nodes:kibana_nodes
+      become: yes
+      tasks:
+        - name: Enable Elasticsearch service
+          systemd:
+            name: elasticsearch
+            state: started
+            enabled: yes
+          when: "'elasticsearch_nodes' in group_names"
+
+        - name: Enable Kibana service
+          systemd:
+            name: kibana
+            state: started
+            enabled: yes
+          when: "'kibana_nodes' in group_names"
+          

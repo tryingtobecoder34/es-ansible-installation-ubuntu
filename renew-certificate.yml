@@ -1,0 +1,24 @@
+- hosts: elasticsearch_nodes
+  tasks:
+    - name: Create a self-signed certificate authority on es01
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil ca --out ~/elastic-stack-ca.p12 --pass ""
+      when: inventory_hostname == "es01"
+
+    - name: Create a certificate for the ElasticSearch node on es01
+      shell: /usr/share/elasticsearch/bin/elasticsearch-certutil cert --ca ~/elastic-stack-ca.p12 --ca-pass "" --out ~/elastic-certificates.p12 --pass ""
+      when: inventory_hostname == "es01"
+
+    - name: Copy the certificate to ansible-node, /tmp
+      fetch:
+        src: ~/elastic-certificates.p12
+        dest: /tmp/elastic-certificates.p12
+        flat: yes
+      when: inventory_hostname == "es01"
+    
+    - name: Copy the certificate to es01, es02, es03, /etc/elasticsearch from ansible-node
+      copy:
+        src: /tmp/elastic-certificates.p12
+        dest: /etc/elasticsearch/elastic-certificates.p12
+        owner: elasticsearch
+        group: elasticsearch
+        mode: 0644

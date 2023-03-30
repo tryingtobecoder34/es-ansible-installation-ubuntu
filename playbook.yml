@@ -66,6 +66,7 @@
         state: present
       delegate_to: "{{ item }}"
       with_items: "{{ groups['elasticsearch_nodes'] }}"
+      run_once: true
 
     - name: Generate Elasticsearch configuration file on es01
       template:
@@ -118,6 +119,7 @@
         state: present
       delegate_to: "{{ item }}"
       with_items: "{{ groups['kibana_nodes'] }}"
+      run_once: true
 
     - name: Generate Kibana configuration file on kibana01
       template:
@@ -128,3 +130,4 @@
         mode: '0644'
       delegate_to: "{{ item }}"
       with_items: "{{ groups['kibana_nodes'] }}"
+      run_once: true

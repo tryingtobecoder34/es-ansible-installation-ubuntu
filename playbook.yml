@@ -64,7 +64,8 @@
       yum:
         name: elasticsearch
         state: present
-      delegate_to: elasticsearch_nodes
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['elasticsearch_nodes'] }}"
 
     - name: Generate Elasticsearch configuration file on es01
       template:
@@ -115,7 +116,8 @@
       yum:
         name: kibana
         state: present
-      delegate_to: kibana_nodes
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['kibana_nodes'] }}"
 
     - name: Generate Kibana configuration file on kibana01
       template:
@@ -124,4 +126,5 @@
         owner: kibana
         group: kibana
         mode: '0644'
-      delegate_to: kibana_nodes
+      delegate_to: "{{ item }}"
+      with_items: "{{ groups['kibana_nodes'] }}"

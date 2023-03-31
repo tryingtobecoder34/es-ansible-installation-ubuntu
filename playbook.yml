@@ -43,7 +43,7 @@
     - name: Add Elasticsearch repository
       become: true
       become_method: sudo
-      yum_repository:
+      dnf_repository:
         name: elasticsearch
         description: Elasticsearch repository for 8.x packages
         baseurl: https://artifacts.elastic.co/packages/8.x/yum
@@ -51,8 +51,8 @@
         gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
       when: "'elasticsearch_nodes' in group_names"
 
-    - name: Install ElasticSearch 8 on CentOS 8
-      yum:
+    - name: Install ElasticSearch 8 on Rhell 8
+      dnf:
         name: elasticsearch
         state: present
       delegate_to: "{{ item }}"
@@ -81,7 +81,7 @@
 
     - name: Install Kibana on kibana01
       become: true
-      yum:
+      dnf:
         name: kibana
         state: present
       delegate_to: "{{ item }}"

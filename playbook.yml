@@ -75,7 +75,7 @@
     - name: Add Kibana repository
       become: true
       dnf:
-        name: https://artifacts.elastic.co/downloads/kibana/kibana-8.6.2-x86_64.rpm
+        name: https://artifacts.elastic.co/downloads/kibana/kibana-8.7.0-x86_64.rpm
         state: present
       when: "'kibana_nodes' in group_names"
 

@@ -7,20 +7,20 @@
     ansible_user: devteam
     ansible_become_user: root
     ansible_become: yes
-    ansible_method: su
+    ansible_become_method: su
   tasks:
-    - name: Update the server and install dnf-plugins-core package
+    - name: Update the server and install yum-plugins-core package
       become: true
-      dnf:
-        name: dnf-plugins-core
+      yum:
+        name: yum-utils
         state: present
         update_cache: yes
 
     - name: Update package cache and fix missing dependencies
       become: true
-      dnf:
+      yum:
         update_cache: yes
-        name: java-11-openjdk-devel
+        name: java-11-openjdk-devel.x86_64
         state: present
 
     - name: Set JAVA_HOME Environment Variables
@@ -47,7 +47,7 @@
     - name: Add Elasticsearch repository
       become: true
       become_method: sudo
-      dnf_repository:
+      yum_repository:
         name: elasticsearch
         description: Elasticsearch repository for 8.x packages
         baseurl: https://artifacts.elastic.co/packages/8.x/yum
@@ -56,7 +56,7 @@
       when: "'elasticsearch_nodes' in group_names"
 
     - name: Install ElasticSearch 8 on Rhell 8
-      dnf:
+      yum:
         name: elasticsearch
         state: present
       delegate_to: "{{ item }}"
@@ -78,14 +78,14 @@
         
     - name: Add Kibana repository
       become: true
-      dnf:
+      yum:
         name: https://artifacts.elastic.co/downloads/kibana/kibana-8.7.0-x86_64.rpm
         state: present
       when: "'kibana_nodes' in group_names"
 
     - name: Install Kibana on kibana01
       become: true
-      dnf:
+      yum:
         name: kibana
         state: present
       delegate_to: "{{ item }}"

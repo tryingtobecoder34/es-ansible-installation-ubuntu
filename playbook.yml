@@ -4,6 +4,10 @@
   vars:
     elasticsearch_config_file: /etc/elasticsearch/elasticsearch.yml
     kibana_config_file: /etc/kibana/kibana.yml
+    ansible_user: devteam
+    ansible_become_user: root
+    ansible_become: yes
+    ansible_method: su
   tasks:
     - name: Update the server and install dnf-plugins-core package
       become: true

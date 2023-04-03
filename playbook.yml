@@ -47,7 +47,7 @@
     - name: Add Elasticsearch repository
       become: true
       become_method: sudo
-      dnf_repository:
+      yum_repository:
         name: elasticsearch
         description: Elasticsearch repository for 8.x packages
         baseurl: https://artifacts.elastic.co/packages/8.x/yum
@@ -56,7 +56,7 @@
       when: "'elasticsearch_nodes' in group_names"
 
     - name: Install ElasticSearch 8 on Rhell 8
-      dnf:
+      yum:
         name: elasticsearch
         state: present
       delegate_to: "{{ item }}"

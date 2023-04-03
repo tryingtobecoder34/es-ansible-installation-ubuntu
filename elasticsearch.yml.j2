@@ -3,8 +3,8 @@ node.name: {{ node_name }}
 path.data: /var/lib/elasticsearch/data
 path.logs: /var/log/elasticsearch
 network.host: 0.0.0.0
-discovery.seed_hosts: ["10.128.0.22", "10.128.0.23", "10.128.0.24"]
-cluster.initial_master_nodes: ["10.128.0.22", "10.128.0.23", "10.128.0.24"]
+discovery.seed_hosts: ["10.190.213.50", "10.190.213.51", "10.190.213.52"]
+cluster.initial_master_nodes: ["10.190.213.50", "10.190.213.51", "10.190.213.52"]
 node.roles: {{ node_roles }}
 xpack.security.transport.ssl.enabled: true
 xpack.security.transport.ssl.verification_mode: certificate

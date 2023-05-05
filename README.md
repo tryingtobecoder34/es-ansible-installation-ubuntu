@@ -1,6 +1,6 @@
-# ElasticSearch and Kibana Instalation with Ansible
+# ElasticSearch Instalation with Ansible
 
-This Ansible playbook sets up a multi-node Elasticsearch. The playbook assumes Rhell 8 as the operating system.
+This Ansible playbook sets up a multi-node Elasticsearch. The playbook assumes Ubuntu 20.04 LTS as the operating system.
 
 ## As long as you don't specify the version this playbook will install latest version of 8.x.x of Elasticserach.
 
@@ -8,14 +8,14 @@ You can try to install a specif version, by changing to older repository url on 
 
 ## Requirements
 - Ansible 2.9.6 or higher
-- Access to ELK servers, from Ansible-Node
+- Access to three Ubuntu 20.04 LTS servers
 - SSH access to each server with sudo privileges
 
 ### Usage
 
 1. Clone this repository to your local machine:
 
-		git clone https://github.com/tryingtobecoder34/es-ansible-installation-centos
+		git clone https://github.com/tryingtobecoder34/es-ansible-installation-ubuntu.git
 
 2. Modify the inventory & Jinja2 files for you enviroment, include the hostnames or IP addresses of your three servers.
 

@@ -1,6 +1,6 @@
 # ElasticSearch and Kibana Instalation with Ansible
 
-This Ansible playbook sets up a multi-node Elasticsearch. The playbook assumes CentOS 8 as the operating system.
+This Ansible playbook sets up a multi-node Elasticsearch. The playbook assumes Rhell 8 as the operating system.
 
 ## As long as you don't specify the version this playbook will install latest version of 8.x.x of Elasticserach.
 

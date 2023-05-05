@@ -9,30 +9,31 @@
     ansible_become: yes
     ansible_method: su
   tasks:
-    - name: Update the server and install dnf-plugins-core package
+    - name: Update the server and install apt-transport-https package
       become: true
-      dnf:
-        name: dnf-plugins-core
+      apt:
+        name: apt-transport-https
         state: present
         update_cache: yes
 
     - name: Update package cache and fix missing dependencies
       become: true
-      dnf:
+      apt:
         update_cache: yes
-        name: java-11-openjdk-devel
+        name: openjdk-11-jdk
         state: present
+        force_apt_get: yes
 
     - name: Set JAVA_HOME Environment Variables
       lineinfile:
         path: /etc/environment
-        line: 'JAVA_HOME="/usr/lib/jvm/java-11"'
+        line: 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"'
       environment:
-        PATH: "{{ ansible_env.PATH }}:/usr/lib/jvm/java-11/bin"
+        PATH: "{{ ansible_env.PATH }}:/usr/lib/jvm/java-11-openjdk-amd64/bin"
 
     - name: Reload environment variables
       become: true
-      shell: source /etc/environment
+      shell: . /etc/environment
 
     - name: Verify JAVA_HOME environment variable
       command: echo $JAVA_HOME
@@ -40,23 +41,20 @@
     - name: Import Elasticsearch GPG key
       become: true
       become_method: sudo
-      rpm_key:
-        key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      apt_key:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
         state: present
+        keyring: /usr/share/keyrings/elasticsearch-keyring.gpg
 
     - name: Add Elasticsearch repository
       become: true
       become_method: sudo
-      yum_repository:
-        name: elasticsearch
-        description: Elasticsearch repository for 8.x packages
-        baseurl: https://artifacts.elastic.co/packages/8.x/yum
-        gpgcheck: yes
-        gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      shell: echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
       when: "'elasticsearch_nodes' in group_names"
 
     - name: Install ElasticSearch 8 on Rhell 8
-      yum:
+      apt:
+        update_cache: yes
         name: elasticsearch
         state: present
       delegate_to: "{{ item }}"
@@ -78,14 +76,14 @@
         
     - name: Add Kibana repository
       become: true
-      dnf:
-        name: https://artifacts.elastic.co/downloads/kibana/kibana-8.7.0-x86_64.rpm
+      apt:
+        deb: https://artifacts.elastic.co/downloads/kibana/kibana-8.7.0-amd64.deb
         state: present
       when: "'kibana_nodes' in group_names"
 
     - name: Install Kibana on kibana01
       become: true
-      dnf:
+      apt:
         name: kibana
         state: present
       delegate_to: "{{ item }}"

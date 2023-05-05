@@ -14,7 +14,7 @@ logging:
       - default
       - file
 pid.file: /run/kibana/kibana.pid
-elasticsearch.hosts: ["http://10.190.213.50:9200", "http://10.190.213.51:9200", "http://10.190.213.52:9200"]
+elasticsearch.hosts: ["http://10.128.0.42:9200", "http://10.128.0.41:9200", "http://10.128.0.40:9200"]
 
 #if you need to run kibana on port 80, just like in this yaml you need to run this commands
     #sudo setcap cap_net_bind_service=+epi /usr/share/kibana/bin/kibana

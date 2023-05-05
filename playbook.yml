@@ -1,4 +1,4 @@
-- name: Install and configure Elasticsearch cluster
+- name: Install and configure Elasticsearch cluster.
   hosts: all
   become: true
   vars:
@@ -9,14 +9,14 @@
     ansible_become: yes
     ansible_method: su
   tasks:
-    - name: Update the server and install apt-transport-https package
+    - name: Update the server and install apt-transport-https package.
       become: true
       apt:
         name: apt-transport-https
         state: present
         update_cache: yes
 
-    - name: Update package cache and fix missing dependencies
+    - name: Update package cache and fix missing dependencies.
       become: true
       apt:
         update_cache: yes
@@ -24,21 +24,21 @@
         state: present
         force_apt_get: yes
 
-    - name: Set JAVA_HOME Environment Variables
+    - name: Set JAVA_HOME Environment Variables.
       lineinfile:
         path: /etc/environment
         line: 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"'
       environment:
         PATH: "{{ ansible_env.PATH }}:/usr/lib/jvm/java-11-openjdk-amd64/bin"
 
-    - name: Reload environment variables
+    - name: Reload environment variables.
       become: true
       shell: . /etc/environment
 
     - name: Verify JAVA_HOME environment variable
       command: echo $JAVA_HOME
 
-    - name: Import Elasticsearch GPG key
+    - name: Import Elasticsearch GPG key.
       become: true
       become_method: sudo
       apt_key:
@@ -46,13 +46,13 @@
         state: present
         keyring: /usr/share/keyrings/elasticsearch-keyring.gpg
 
-    - name: Add Elasticsearch repository
+    - name: Add Elasticsearch repository.
       become: true
       become_method: sudo
       shell: echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
       when: "'elasticsearch_nodes' in group_names"
 
-    - name: Install ElasticSearch 8 on Rhell 8
+    - name: Install ElasticSearch 8 on Ubuntu 20.04 LTS.
       apt:
         update_cache: yes
         name: elasticsearch
@@ -61,7 +61,7 @@
       with_items: "{{ groups['elasticsearch_nodes'] }}"
       run_once: true
 
-    - name: Generate Elasticsearch configuration file on all nodes
+    - name: Generate Elasticsearch configuration file on Elasticsearch nodes.
       template:
         src: elasticsearch.yml.j2
         dest: "{{ elasticsearch_config_file }}"
@@ -74,14 +74,14 @@
         node_name: "{{ hostvars[item]['node_name'] }}"
       loop: "{{ groups['elasticsearch_nodes'] }}"
         
-    - name: Add Kibana repository
+    - name: Add Kibana repository.
       become: true
       apt:
         deb: https://artifacts.elastic.co/downloads/kibana/kibana-8.7.0-amd64.deb
         state: present
       when: "'kibana_nodes' in group_names"
 
-    - name: Install Kibana on kibana01
+    - name: Install Kibana.
       become: true
       apt:
         name: kibana
@@ -90,7 +90,7 @@
       with_items: "{{ groups['kibana_nodes'] }}"
       run_once: true
 
-    - name: Generate Kibana configuration file on kibana01
+    - name: Generate Kibana configuration file on Kibana server.
       template:
         src: kibana.yml.j2
         dest: "{{ kibana_config_file }}"
@@ -101,13 +101,13 @@
       with_items: "{{ groups['kibana_nodes'] }}"
       run_once: true
 
-    - name: Enable Elasticsearch service
+    - name: Enable Elasticsearch service.
       systemd:
         name: elasticsearch
         enabled: yes
       when: "'elasticsearch_nodes' in group_names"
 
-    - name: Enable Kibana service
+    - name: Enable Kibana service.
       systemd:
         name: kibana
         enabled: yes
